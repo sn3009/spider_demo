@@ -4,6 +4,11 @@
 
 引用包：pip3 install -r requirements
 
+包说明：
+selenium 自动化测试工具，防浏览器访问
+BeautifulSoup 解析html利器
+ffmpy3 音视频处理ffmpeg python工具
+
 运行  pip3 xj.py
 
 显示提示： 
