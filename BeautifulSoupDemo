@@ -1,0 +1,37 @@
+import time
+
+from bs4 import BeautifulSoup
+from selenium import webdriver
+import requests
+
+url="<html><head></head><body><p>aa</p></body></html>"
+
+r = requests.get('https://www.baomihua.com/film')
+
+def example():
+    soup = BeautifulSoup(r.content)
+    print(soup.contents);
+    print(soup.find_all("div", _class="video-img"))
+
+def loadJsPage():
+    list_url = "https://www.baomihua.com/film"
+    opt = webdriver.ChromeOptions()
+    opt.set_headless()
+    opt.add_argument('--ignore-certificate-errors')
+    opt.add_argument("--test-type")
+    opt.add_argument(
+        "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36")
+    driver = webdriver.Chrome(options=opt, executable_path="/Users/shuttle/python/chromedriver")
+    driver.get(list_url)
+    soup = BeautifulSoup(driver.page_source)
+    print(soup.find_all("div", class_="video-img"))
+    # time.sleep(1)
+    # soup = BeautifulSoup(driver.page_source)
+    # divs = soup.find_all("div", class_="video-img")
+    # for div in divs:
+    #     divSoup = BeautifulSoup(str(div))
+    #     print(divSoup.find("a").get('href'))
+    #print(soup.find_all("li"))
+
+if __name__ == "__main__":
+    loadJsPage()
