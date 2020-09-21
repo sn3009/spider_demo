@@ -1,5 +1,5 @@
 import time
-
+from ffmpy3 import FFmpeg
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import requests
@@ -23,15 +23,64 @@ def loadJsPage():
         "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36")
     driver = webdriver.Chrome(options=opt, executable_path="/Users/shuttle/python/chromedriver")
     driver.get(list_url)
+    #简单加载
     soup = BeautifulSoup(driver.page_source)
-    print(soup.find_all("div", class_="video-img"))
     # time.sleep(1)
+    print(soup.find_all("div", class_="video-img"))
+
+    #获取地址，并下载视频
     # soup = BeautifulSoup(driver.page_source)
     # divs = soup.find_all("div", class_="video-img")
+    # i=0
     # for div in divs:
+    #     if(i > 3): break;
     #     divSoup = BeautifulSoup(str(div))
-    #     print(divSoup.find("a").get('href'))
-    #print(soup.find_all("li"))
+    #     url=divSoup.find("a").get('href')
+    #     detail(url)
+    #     i=i+1
+
+#解析详情页
+def detail(url):
+    opt = webdriver.ChromeOptions()
+    opt.set_headless()
+    opt.add_argument('--ignore-certificate-errors')
+    opt.add_argument("--test-type")
+    opt.add_argument(
+        "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36")
+    driver = webdriver.Chrome(options=opt, executable_path="/Users/shuttle/python/chromedriver")
+    driver.get(url)
+    time.sleep(3)
+    soup = BeautifulSoup(driver.page_source)
+    video = soup.find("video")
+    while (video == None):
+        time.sleep(1)
+        soup = BeautifulSoup(driver.page_source)
+        video = soup.find("video")
+    downVideo(soup.find("video").find("source").get("src"))
+
+#下载视频
+def downVideo(url):
+    t = time.time()
+    _name = str(int(round(t * 1000000))) + '.mp4'
+    ffmpeg_path(url, "down/" + _name)
+    f = "source.txt"
+    with open(f, "a") as file:  # 只需要将之前的”w"改为“a"即可，代表追加内容
+        info = url
+        file.write(info + "\n")
+def ffmpeg_path(inputs_path, outputs_path):
+    '''
+    :param inputs_path: 输入的文件传入字典格式{文件：操作}
+    :param outputs_path: 输出的文件传入字典格式{文件：操作}
+    :return:
+    '''
+    a = FFmpeg(
+                inputs={inputs_path: None},
+                outputs={outputs_path: '-c copy',
+                         }
+    )
+    print(a.cmd)
+    a.run()
 
 if __name__ == "__main__":
-    loadJsPage()
+    example();
+    #loadJsPage();
